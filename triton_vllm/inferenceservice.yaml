@@ -2,12 +2,11 @@ apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   annotations:
-    openshift.io/display-name: whisper
+    openshift.io/display-name: whisper-triton-vllm
     serving.knative.openshift.io/enablePassthrough: 'true'
     sidecar.istio.io/inject: 'true'
     sidecar.istio.io/rewriteAppHTTPProbers: 'true'
-  name: whisper
-  namespace: whisper
+  name: whisper-triton-vllm
   labels:
     opendatahub.io/dashboard: 'true'
 spec:
@@ -16,7 +15,7 @@ spec:
     minReplicas: 1
     model:
       modelFormat:
-        name: pytorch
+        name: triton
       name: ''
       resources:
         limits:
@@ -25,7 +24,7 @@ spec:
         requests:
           cpu: '1'
           memory: 4Gi
-      runtime: triton
+      runtime: triton_vllm
       storage:
         key: models
         path: openai/whisper-tiny/

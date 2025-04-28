@@ -39,7 +39,6 @@ class AsrModel(Model):
             max_model_len=448,
             max_num_seqs=400,
             limit_mm_per_prompt={"audio": 1},
-            # kv_cache_dtype="fp8",
         )
         # The ready flag is used by model ready endpoint for readiness probes,
         # set to True when model is loaded successfully without exceptions.
@@ -71,16 +70,9 @@ class AsrModel(Model):
             payload: Union[Dict, InferRequest],
             headers: Dict[str, str] = None
     ) -> Union[Dict, InferResponse]:
-        # audio_info = payload["multi_modal_data"]["audio"]
-        # audio_array, sample_rate = self.deserialize_audio(audio_info)
-        # payload["multi_modal_data"]["audio"] = (audio_array, sample_rate)
-        # bytes_data = base64.b64decode(payload["audio"])
-
         audio_array, sample_rate = payload["multi_modal_data"]["audio"]
         audio_array = self.deserialize_audio(audio_array)
         payload["multi_modal_data"]["audio"] = (audio_array, sample_rate)
-
-        # payload["multi_modal_data"]["audio"] = base64.b64decode(payload["multi_modal_data"]["audio"])
 
 
         sampling_params = SamplingParams(
@@ -92,7 +84,6 @@ class AsrModel(Model):
         outputs = self.model.generate(payload, sampling_params)
 
         generated_text = outputs[0].outputs[0].text
-        # transcription = self.pipeline(bytes_data)
 
         return {
             "predictions": [

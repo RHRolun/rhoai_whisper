@@ -8,8 +8,8 @@ metadata:
     opendatahub.io/recommended-accelerators: '["nvidia.com/gpu"]'
     opendatahub.io/template-display-name: ASR Runtime
     opendatahub.io/template-name: asr-runtime
-    openshift.io/display-name: whisper-small
-  name: whisper-small
+    openshift.io/display-name: whisper-kserve-vllm
+  name: whisper-kserve-vllm
   namespace: whisper
   labels:
     opendatahub.io/dashboard: 'true'
@@ -18,7 +18,7 @@ spec:
     prometheus.kserve.io/path: /metrics
     prometheus.kserve.io/port: '8888'
   containers:
-    - image: 'quay.io/rlundber/whisper-vllm-kserve:0.23'
+    - image: 'quay.io/rlundber/whisper-vllm-kserve:s3-preprocessing'
       imagePullPolicy: Always
       name: kserve-container
       ports:

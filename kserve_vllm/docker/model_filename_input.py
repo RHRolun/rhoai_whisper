@@ -115,16 +115,14 @@ class AsrModel(Model):
         audio_array, sample_rate = payload
         audio_array = self.deserialize_audio(audio_array)
 
-        model_input = {
-            "instances": [
-                {
-                    "prompt": "<|startoftranscript|>",
-                    "multi_modal_data": {
-                        "audio": (audio_array, sample_rate),
-                    },
-                }
-            ]
-        }
+        model_input = [
+            {
+                "prompt": "<|startoftranscript|>",
+                "multi_modal_data": {
+                    "audio": (audio_array, sample_rate),
+                },
+            }
+        ]
 
         print(model_input)
 
@@ -136,6 +134,8 @@ class AsrModel(Model):
         )
 
         outputs = self.model.generate(model_input, sampling_params)
+
+        print(f"outputs: {outputs}")
 
         generated_text = outputs[0].outputs[0].text
         # transcription = self.pipeline(bytes_data)

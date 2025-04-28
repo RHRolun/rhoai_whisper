@@ -3,11 +3,11 @@ apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   annotations:
-    openshift.io/display-name: whisper-small
+    openshift.io/display-name: whisper-kserve-vllm
     serving.knative.openshift.io/enablePassthrough: 'true'
     sidecar.istio.io/inject: 'true'
     sidecar.istio.io/rewriteAppHTTPProbers: 'true'
-  name: whisper-small
+  name: whisper-kserve-vllm
   labels:
     opendatahub.io/dashboard: 'true'
 spec:
@@ -28,7 +28,7 @@ spec:
           cpu: 200m
           memory: 1Gi
           nvidia.com/gpu: '1'
-      runtime: whisper-small
+      runtime: whisper-kserve-vllm
       storage:
         key: models
         path: openai/whisper-tiny
