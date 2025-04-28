@@ -4,9 +4,7 @@ kind: InferenceService
 metadata:
   annotations:
     openshift.io/display-name: whisper-triton-vllm
-    serving.knative.openshift.io/enablePassthrough: 'true'
-    sidecar.istio.io/inject: 'true'
-    sidecar.istio.io/rewriteAppHTTPProbers: 'true'
+    serving.kserve.io/deploymentMode: RawDeployment
   name: whisper-triton-vllm
   labels:
     opendatahub.io/dashboard: 'true'
@@ -22,10 +20,14 @@ spec:
         limits:
           cpu: '2'
           memory: 8Gi
+          nvidia.com/gpu: '1'
         requests:
           cpu: '1'
           memory: 4Gi
-      runtime: triton_vllm
-      storage:
-        key: models
-        path: openai/whisper-tiny/
+          nvidia.com/gpu: '1'
+      runtime: whisper-triton-vllm
+      storageUri: "pvc://pvcdummy"
+    tolerations:
+      - effect: NoSchedule
+        key: nvidia.com/gpu
+        value: NVIDIA-A10G-SHARED
