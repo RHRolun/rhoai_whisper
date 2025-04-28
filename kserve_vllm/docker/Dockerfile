@@ -22,4 +22,4 @@ RUN \
   fi
 
 # Specify the command to run on container start
-ENTRYPOINT ["python", "./model.py"]
+ENTRYPOINT ["python", "./model_filename_input.py"]
