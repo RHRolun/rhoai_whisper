@@ -1,0 +1,54 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  name: tritonserver
+  namespace: whisper
+spec:
+  annotations:
+    prometheus.kserve.io/path: /metrics
+    prometheus.kserve.io/port: '8002'
+  containers:
+    - args:
+        - tritonserver
+        - '--model-store=/mnt/models/model_repository'
+        - '--grpc-port=9000'
+        - '--http-port=8080'
+        - '--allow-grpc=true'
+        - '--allow-http=true'
+        - '--log-verbose=1'
+      env:
+        - name: VLLM_NO_USAGE_STATS
+          value: '1'
+        - name: DO_NOT_TRACK
+          value: '1'
+      image: 'nvcr.io/nvidia/tritonserver:25.02-vllm-python-py3'
+      name: kserve-container
+      resources:
+        limits:
+          cpu: '1'
+          memory: 2Gi
+        requests:
+          cpu: '1'
+          memory: 2Gi
+      volumeMounts:
+        - mountPath: /mnt/models/model_repository/whisper/1/model.json
+          name: model-configs
+          subPath: model.json
+        - mountPath: /mnt/models/model_repository/whisper/config.pbtxt
+          name: model-configs
+          subPath: config.pbtxt
+  protocolVersions:
+    - v2
+    - grpc-v2
+  supportedModelFormats:
+    - name: triton
+      version: '2'
+  volumes:
+    - configMap:
+        items:
+          - key: model.json
+            path: model.json
+          - key: config.pbtxt
+            path: config.pbtxt
+        name: model-configs
+      name: model-configs

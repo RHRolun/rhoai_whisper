@@ -1,0 +1,38 @@
+---
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    openshift.io/display-name: whisper-small
+    serving.knative.openshift.io/enablePassthrough: 'true'
+    sidecar.istio.io/inject: 'true'
+    sidecar.istio.io/rewriteAppHTTPProbers: 'true'
+  name: whisper-small
+  labels:
+    opendatahub.io/dashboard: 'true'
+spec:
+  predictor:
+    maxReplicas: 1
+    minReplicas: 1
+    model:
+      modelFormat:
+        name: pytorch
+        version: '1'
+      name: ''
+      resources:
+        limits:
+          cpu: '8'
+          memory: 8Gi
+          nvidia.com/gpu: '1'
+        requests:
+          cpu: 200m
+          memory: 1Gi
+          nvidia.com/gpu: '1'
+      runtime: whisper-small
+      storage:
+        key: models
+        path: openai/whisper-tiny
+    tolerations:
+      - effect: NoSchedule
+        key: nvidia.com/gpu
+        value: NVIDIA-A10G-SHARED
