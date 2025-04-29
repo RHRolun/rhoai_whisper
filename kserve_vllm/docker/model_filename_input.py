@@ -78,6 +78,22 @@ class AsrModel(Model):
         except Exception as e:
             print(f"Error downloading file: {e}")
             raise e
+        
+    def split_audio(self, audio, chunk_duration=30.0, target_sr=16000, overlap_duration=0.0):
+        samples_per_chunk = int(chunk_duration * target_sr)
+        overlap_samples = int(overlap_duration * target_sr)
+        
+        step_size = samples_per_chunk - overlap_samples
+        
+        total_samples = len(audio)
+        
+        chunks = [
+            audio[i:i + samples_per_chunk]
+            for i in range(0, total_samples - samples_per_chunk + 1, step_size)
+        ]
+        chunks.append(audio[-(total_samples - len(chunks)*step_size):])
+        
+        return chunks, target_sr
 
 
     def preprocess(
@@ -114,14 +130,16 @@ class AsrModel(Model):
 
         audio_array, sample_rate = payload
         audio_array = self.deserialize_audio(audio_array)
+        chunks, _ = self.split_audio(audio_array)
 
         model_input = [
             {
-                "prompt": "<|startoftranscript|>",
+                "prompt": "<|startoftranscript|><|transcribe|><|notimestamps|>",
                 "multi_modal_data": {
-                    "audio": (audio_array, sample_rate),
+                    "audio": (audio_snippet, sample_rate),
                 },
             }
+            for audio_snippet in chunks
         ]
 
         print(model_input)
@@ -129,16 +147,16 @@ class AsrModel(Model):
 
         sampling_params = SamplingParams(
             temperature=0,
-            top_p=1.0,
-            max_tokens=200,
+            max_tokens=256,
         )
 
         outputs = self.model.generate(model_input, sampling_params)
 
         print(f"outputs: {outputs}")
 
-        generated_text = outputs[0].outputs[0].text
-        # transcription = self.pipeline(bytes_data)
+        # answers = [self.model.get_tokenizer().normalize(output.outputs[0].text) for output in outputs]  # whisper post processing
+        answers = [output.outputs[0].text for output in outputs]
+        generated_text = " ".join(answers)
 
         return {
             "predictions": [

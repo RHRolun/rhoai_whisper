@@ -31,7 +31,7 @@ spec:
       runtime: whisper-kserve-vllm
       storage:
         key: models
-        path: openai/whisper-tiny
+        path: openai/whisper-large-v3-turbo
     tolerations:
       - effect: NoSchedule
         key: nvidia.com/gpu
