@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.4
 WORKDIR /models
-COPY . .
+COPY whisper-large-v3-turbo/ /models/
 USER 1001
 
 # WORKDIR /models/1
