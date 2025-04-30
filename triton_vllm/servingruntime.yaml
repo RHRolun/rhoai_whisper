@@ -11,10 +11,6 @@ spec:
     - args:
         - tritonserver
         - '--model-store=/mnt/models/model_repository'
-        - '--grpc-port=9000'
-        - '--http-port=8080'
-        - '--allow-grpc=true'
-        - '--allow-http=true'
         - '--log-verbose=1'
       env:
         - name: VLLM_NO_USAGE_STATS
@@ -23,13 +19,6 @@ spec:
           value: '1'
       image: 'nvcr.io/nvidia/tritonserver:25.02-vllm-python-py3'
       name: kserve-container
-      resources:
-        limits:
-          cpu: '1'
-          memory: 2Gi
-        requests:
-          cpu: '1'
-          memory: 2Gi
       volumeMounts:
         - mountPath: /mnt/models/model_repository/whisper/1/model.json
           name: model-configs
@@ -37,6 +26,13 @@ spec:
         - mountPath: /mnt/models/model_repository/whisper/config.pbtxt
           name: model-configs
           subPath: config.pbtxt
+      readinessProbe:
+        tcpSocket:
+          port: 8000
+        timeoutSeconds: 1
+        periodSeconds: 10
+        successThreshold: 1
+        failureThreshold: 3
   protocolVersions:
     - v2
     - grpc-v2
