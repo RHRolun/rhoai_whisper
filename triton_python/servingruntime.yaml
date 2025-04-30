@@ -1,0 +1,45 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  name: whisper-triton-python
+spec:
+  annotations:
+    prometheus.kserve.io/path: /metrics
+    prometheus.kserve.io/port: '8002'
+  containers:
+    - args:
+        - '-c'
+        - exec tritonserver "--model-store=/mnt/models/model_repository" "--model-control-mode=explicit" "--strict-model-config=false" "--strict-readiness=false" "--allow-http=true" "--allow-sagemaker=false"
+      command:
+        - /bin/sh
+      image: 'docker.io/bousdardina/playground-images:custom-nvidia-triton-24.09-py3-5.0'
+      name: kserve-container
+      readinessProbe:
+        failureThreshold: 3
+        periodSeconds: 10
+        successThreshold: 1
+        tcpSocket:
+          port: 8000
+        timeoutSeconds: 1
+      volumeMounts:
+        - mountPath: /mnt/models/model_repository/whisper/1/model.json
+          name: model-configs
+          subPath: model.json
+        - mountPath: /mnt/models/model_repository/whisper/config.pbtxt
+          name: model-configs
+          subPath: config.pbtxt
+  protocolVersions:
+    - v2
+    - grpc-v2
+  supportedModelFormats:
+    - name: triton
+      version: '2'
+  volumes:
+    - configMap:
+        items:
+          - key: model.json
+            path: model.json
+          - key: config.pbtxt
+            path: config.pbtxt
+        name: model-configs
+      name: model-configs
