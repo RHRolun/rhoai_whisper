@@ -7,31 +7,9 @@ metadata:
 immutable: false
 data:
   config.pbtxt: |-
-    name: "whisper"
     backend: "vllm"
-    max_batch_size: 0
 
-    input [
-      {
-        name: "TEXT_PREFIX"
-        data_type: TYPE_STRING
-        dims: [1]
-      },
-      {
-        name: "WAV"
-        data_type: TYPE_FP32
-        dims: [-1]
-      }
-    ]
-
-    output [
-      {
-        name: "TRANSCRIPTS"
-        data_type: TYPE_STRING
-        dims: [1]
-      }
-    ]
-
+    # The usage of device is deferred to the vLLM engine
     instance_group [
       {
         count: 1
@@ -42,5 +20,6 @@ data:
     {
         "model": "/mnt/models/model_repository/whisper/whisper",
         "disable_log_requests": "true",
-        "gpu_memory_utilization": 0.95
+        "gpu_memory_utilization": 0.95,
+        "enforce_eager": true
     }
