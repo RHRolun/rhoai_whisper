@@ -1,8 +1,13 @@
-# rhoai_whisper
+# Serving Whisper with RHOAI
 
-This repo contains a few ways to serve Whisper:
-1. With a KServe model using hf pipelines
-2. With a KServe model using vLLM
-3. With Triton using vLLM (currently not mature enough)
+This repo, created by the CAI team, contains a few ways to serve Whisper:
 
-It also contains an example for how to fetch files from S3 as part of the preprocessing.
+## Methods
+
+* [KServe with Hugging Face Pipelines](./kserve_hf_pipelines): A KServe model using Hugging Face pipelines.
+* [KServe with vLLM](./kserve_vllm): A KServe model using vLLM.
+* [Triton with vLLM](./triton_vllm): A Triton model using vLLM (currently not mature enough).
+
+## Additional Features
+
+This repo also contains an example for how to fetch files from S3 as part of the preprocessing.
